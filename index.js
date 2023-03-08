@@ -1,6 +1,11 @@
 const express = require("express");
 const app = new express();
 
+const path = require('path');
+app.use(express.static(path.join(__dirname,'/build')));
+
+
+
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
@@ -20,7 +25,7 @@ app.get('/',(req,res)=> {
 })
 
 
-app.post('/create',(req,res)=>{
+app.post('/api/create',(req,res)=>{
  try{
     console.log(req.body);
     let movie = new movieInfo(req.body);
@@ -32,7 +37,7 @@ app.post('/create',(req,res)=>{
  }
 })
 
-app.get('/view', async (req,res)=>{
+app.get('/api/view', async (req,res)=>{
     try {
         let result = await movieInfo.find();
         res.json(result);
@@ -43,7 +48,7 @@ app.get('/view', async (req,res)=>{
 })
 
 
-app.post('/update', async (req,res)=>{
+app.post('/api/update', async (req,res)=>{
     try {
          await movieInfo.findByIdAndUpdate(req.body._id,req.body);
          res.send("Data Updated");
@@ -52,7 +57,7 @@ app.post('/update', async (req,res)=>{
     }
 })
 
-app.post('/delete', async (req,res)=> {
+app.post('/api/delete', async (req,res)=> {
     try {
      await movieInfo.findByIdAndDelete(req.body._id);
     res.send("Data Deleted")
@@ -61,7 +66,7 @@ app.post('/delete', async (req,res)=> {
     }
 })
 
-app.post('/search', async(req,res) => {
+app.post('/api/search', async(req,res) => {
     try {
         let result = await movieInfo.find(req.body);
          res.json(result)
@@ -70,6 +75,9 @@ app.post('/search', async(req,res) => {
         res.status(500).send(error); 
     }
 })
+
+app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname,'/build/index.html')); });
 
 
 
